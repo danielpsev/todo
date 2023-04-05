@@ -28,11 +28,12 @@ let tasks = [
     },
   ];
 
+// tasks list
 router.get('/', (req, res) => {
     res.status(200).json(tasks);
 });
 
-
+// create task
 router.post('/', (req, res) => {
     console.log(req.body);
     if(req.body.id || req.body.task){
@@ -48,13 +49,14 @@ router.post('/', (req, res) => {
     }
 
 });
-
+// delete task
 router.delete('/:id', (req, res) => {
     let data = tasks.filter(item => item.id != req.params.id);
     tasks = data;
     res.status(200).json(tasks);
 });
 
+// set status true = done
 router.put('/:id', (req, res) => {
     let data = [...tasks];
     data.forEach((task) => {
@@ -67,8 +69,8 @@ router.put('/:id', (req, res) => {
     res.status(200).json(tasks);
 });
 
+// edit task
 router.put('/edit/:id', (req, res) => {
-  console.log('edit');
   let data = [...tasks];
   data.forEach((task) => {
       if (task.id == req.params.id) {
