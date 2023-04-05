@@ -67,6 +67,18 @@ router.put('/:id', (req, res) => {
     res.status(200).json(tasks);
 });
 
+router.put('/edit/:id', (req, res) => {
+  console.log('edit');
+  let data = [...tasks];
+  data.forEach((task) => {
+      if (task.id == req.params.id) {
+        task.task = req.body.task;
+        return;
+      }
+    });
+    tasks = data;
+  res.status(200).json(tasks);
+});
 
 
 module.exports = router;
