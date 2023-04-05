@@ -39,4 +39,6 @@ table tbody td {
 table button {
   font-size: 0.875rem;
 }
-
+tr.active{
+  background-color: rgba(50, 140, 168, 0.4) !important;
+}

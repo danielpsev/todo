@@ -73,7 +73,7 @@ router.put('/:id', (req, res) => {
 router.put('/edit/:id', (req, res) => {
   let data = [...tasks];
   data.forEach((task) => {
-      if (task.id == req.params.id) {
+      if (task.id == req.params.id && task.status == false) {
         task.task = req.body.task;
         return;
       }

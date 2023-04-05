@@ -4,6 +4,11 @@ import Task from "./Task";
 export default function ToDo() {
   const [taskInput, setTaskInput] = useState("");
   const [tasks, setTasks] = useState([]);
+  const [editTask, setEditTask] = useState({
+    id: '',
+    task: '',
+    status: ''
+  });
   const api_url = 'http://localhost:3001/api/v1';
 
   useEffect(() => {
@@ -19,6 +24,10 @@ export default function ToDo() {
     }
     getTasks();
   }, []);
+
+
+
+
 
 
   const changeStatus = async (id) => {
@@ -37,6 +46,11 @@ export default function ToDo() {
       const data = await res.json();
       console.log(data);
       setTasks(data);
+      setEditTask({
+        id: '',
+        task: '',
+        status: ''
+      });
     }catch (err) {
       console.log(err);
     }
@@ -51,19 +65,45 @@ export default function ToDo() {
         status={el.status}
         deleteTask={deleteTask}
         changeStatus={changeStatus}
+        obj={el}
+        editTask={editTask}
+        setEditTask={setEditTask}
       />
     );
   });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+
+    if(editTask.id != ''){
+      try{
+        const edited_task = {task: editTask.task}
+        const res = await fetch(`${api_url}/todo/edit/${editTask.id}`, {
+          method: 'PUT',   
+           body: JSON.stringify(edited_task),
+           headers: {
+            'Content-Type': 'application/json'
+          },
+        });
+        const data = await res.json();
+        console.log(data);
+        setTasks(data);
+      }catch (err) {
+        console.log(err);
+      }
+      setEditTask({
+        id: '',
+        task: '',
+        status: ''
+      });
+    }else{
     if (taskInput) {
       // const new_task = { id: uuidv4(), task: taskInput, status: false };
       // setTasks(() => [...tasks, new_task]);
-
       try{
         const new_task = { id: uuidv4(), task: taskInput}
-        const res = await fetch(`http://localhost:3001/api/v1/todo/`, {
+        const res = await fetch(`${api_url}/todo/`, {
           method: 'POST',   
            body: JSON.stringify(new_task),
            headers: {
@@ -82,13 +122,14 @@ export default function ToDo() {
     } else {
       alert("Task input is empty");
     }
+  }
   };
 
   return (
     <div className="container d-flex flex-column mt-5">
-<header class="navbar navbar-expand-lg navbar-light bg-light">
-  <div class="container-fluid">
-    <h1 class="navbar-brand mx-auto">To do</h1>
+<header className="navbar navbar-expand-lg navbar-light bg-light">
+  <div className="container-fluid">
+    <h1 className="navbar-brand mx-auto">To do</h1>
   </div>
 </header>
       <form onSubmit={handleSubmit} className="mt-3">
@@ -98,8 +139,9 @@ export default function ToDo() {
           id="taskInput"
           name="taskInput"
           placeholder="Enter task"
-          value={taskInput}
-          onChange={(e) => setTaskInput(e.target.value)}
+          
+          value={editTask.id != '' ? editTask.task : taskInput}
+          onChange={(e) => editTask.id != '' ?  setEditTask({...editTask, task: e.target.value}): setTaskInput(e.target.value)}
         />
       </form>
       <div className="table-responsive-xl mt-2">
@@ -111,7 +153,7 @@ export default function ToDo() {
               <th scope="col">Action</th>
             </tr>
           </thead>
-          <tbody>{tasks_list}</tbody>
+          <tbody>{tasks.length != 0 ? tasks_list : <tr><td colSpan={3} style={{textAlign: "center" }}>No tasks</td></tr>}</tbody>
         </table>
       </div>
       <footer className="bg-dark text-white text-center py-3">
